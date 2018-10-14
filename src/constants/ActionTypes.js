@@ -59,13 +59,16 @@ export const SIGNIN_USER_SUCCESS = 'signin_user_success';
 export const SIGNOUT_USER = 'signout_user';
 export const SIGNOUT_USER_SUCCESS = 'signout_user_success';
 export const INIT_URL = 'init_url';
+export const FORGOT_PASSWORD = 'forgot_password';
 
 // Chat Module const
 
 export const FETCH_ALL_CHAT_USER = 'fetch_all_chat_user';
-export const FETCH_ALL_CHAT_USER_CONVERSATION = 'fetch_all_chat_user_conversation';
+export const FETCH_ALL_CHAT_USER_CONVERSATION =
+  'fetch_all_chat_user_conversation';
 export const FETCH_ALL_CHAT_USER_SUCCESS = 'fetch_all_chat_user_success';
-export const FETCH_ALL_CHAT_USER_CONVERSATION_SUCCESS = 'fetch_all_chat_user_conversation_success';
+export const FETCH_ALL_CHAT_USER_CONVERSATION_SUCCESS =
+  'fetch_all_chat_user_conversation_success';
 export const FILTER_USERS = 'filter_users';
 export const ON_SELECT_USER = 'on_select_user';
 export const ON_SHOW_LOADER = 'on_show_loader';

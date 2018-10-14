@@ -13,19 +13,23 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {
   hideMessage,
   showAuthLoader,
+  hideAuthLoader,
   userFacebookSignIn,
   userGithubSignIn,
   userGoogleSignIn,
   userSignIn,
-  userTwitterSignIn
+  userTwitterSignIn,
+  forgotPassword
 } from 'actions/Auth';
+import ForgotPassword from './forgotPassword';
 
 class SignIn extends React.Component {
   constructor() {
     super();
     this.state = {
       email: 'testuser@gmail.com',
-      password: 'asd123'
+      password: 'asd123',
+      forgotPassword: false
     };
   }
 
@@ -40,9 +44,28 @@ class SignIn extends React.Component {
     }
   }
 
+  toggleForgotPasswordModal(forgotPassword) {
+    this.setState({ forgotPassword });
+  }
+
+  handleRequestSubmit({ email }) {
+    this.toggleForgotPasswordModal(false);
+    this.props.showAuthLoader();
+    this.props.forgotPassword({ email });
+  }
+
   render() {
-    const { email, password } = this.state;
-    const { showMessage, loader, alertMessage } = this.props;
+    const { email, password, forgotPassword } = this.state;
+    const {
+      showMessage,
+      loader,
+      alertMessage,
+      successMessage,
+      hideAuthLoader
+    } = this.props;
+    if (showMessage) {
+      hideAuthLoader();
+    }
     return (
       <div className="app-login-container d-flex justify-content-center align-items-center animated slideInUpTiny animation-duration-3">
         <div className="app-login-main-content">
@@ -99,63 +122,19 @@ class SignIn extends React.Component {
                     >
                       <IntlMessages id="appModule.signIn" />
                     </Button>
-
                     <Link to="/signup">
                       <IntlMessages id="signIn.signUp" />
                     </Link>
                   </div>
-
-                  <div className="app-social-block my-1 my-sm-3">
-                    <IntlMessages id="signIn.connectWith" />
-                    <ul className="social-link">
-                      <li>
-                        <IconButton
-                          className="icon"
-                          onClick={() => {
-                            this.props.showAuthLoader();
-                            this.props.userFacebookSignIn();
-                          }}
-                        >
-                          <i className="zmdi zmdi-facebook" />
-                        </IconButton>
-                      </li>
-
-                      <li>
-                        <IconButton
-                          className="icon"
-                          onClick={() => {
-                            this.props.showAuthLoader();
-                            this.props.userTwitterSignIn();
-                          }}
-                        >
-                          <i className="zmdi zmdi-twitter" />
-                        </IconButton>
-                      </li>
-
-                      <li>
-                        <IconButton
-                          className="icon"
-                          onClick={() => {
-                            this.props.showAuthLoader();
-                            this.props.userGoogleSignIn();
-                          }}
-                        >
-                          <i className="zmdi zmdi-google-plus" />
-                        </IconButton>
-                      </li>
-
-                      <li>
-                        <IconButton
-                          className="icon"
-                          onClick={() => {
-                            this.props.showAuthLoader();
-                            this.props.userGithubSignIn();
-                          }}
-                        >
-                          <i className="zmdi zmdi-github" />
-                        </IconButton>
-                      </li>
-                    </ul>
+                  <div className="my-1 my-sm-3">
+                    <a
+                      className="forgot-password-link"
+                      onClick={() => {
+                        this.toggleForgotPasswordModal(true);
+                      }}
+                    >
+                      Forgot Password ?
+                    </a>
                   </div>
                 </fieldset>
               </form>
@@ -167,7 +146,17 @@ class SignIn extends React.Component {
             <CircularProgress />
           </div>
         )}
-        {showMessage && NotificationManager.error(alertMessage)}
+        {showMessage && alertMessage && NotificationManager.error(alertMessage)}
+        {showMessage &&
+          successMessage &&
+          NotificationManager.success(successMessage)}
+        {forgotPassword && (
+          <ForgotPassword
+            open={forgotPassword}
+            handleRequestClose={() => this.toggleForgotPasswordModal(false)}
+            handleRequestSubmit={this.handleRequestSubmit.bind(this)}
+          />
+        )}
         <NotificationContainer />
       </div>
     );
@@ -175,8 +164,8 @@ class SignIn extends React.Component {
 }
 
 const mapStateToProps = ({ auth }) => {
-  const { loader, alertMessage, showMessage, authUser } = auth;
-  return { loader, alertMessage, showMessage, authUser };
+  const { loader, alertMessage, successMessage, showMessage, authUser } = auth;
+  return { loader, alertMessage, successMessage, showMessage, authUser };
 };
 
 export default connect(
@@ -185,9 +174,11 @@ export default connect(
     userSignIn,
     hideMessage,
     showAuthLoader,
+    hideAuthLoader,
     userFacebookSignIn,
     userGoogleSignIn,
     userGithubSignIn,
-    userTwitterSignIn
+    userTwitterSignIn,
+    forgotPassword
   }
 )(SignIn);

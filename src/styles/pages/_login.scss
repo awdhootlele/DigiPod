@@ -1,6 +1,9 @@
 /*Login Styles*/
 /*Login Styles*/
 
+// variables - 
+$text_color_primary: #32408f;
+
 .login-container {
   position: relative;
   height: 100%;
@@ -49,6 +52,16 @@
     bottom: 0;
     z-index: 2;
   }
+   & .forgot-password-link,
+    .forgot-password-link:hover {
+      cursor: pointer;
+      color: $text_color_primary !important;
+    }
+    & .forgot-password-link:hover {
+      text-decoration: underline !important;
+
+    }
+  
 }
 
 .app-login-main-content {
