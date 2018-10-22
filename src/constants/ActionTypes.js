@@ -60,6 +60,9 @@ export const SIGNOUT_USER = 'signout_user';
 export const SIGNOUT_USER_SUCCESS = 'signout_user_success';
 export const INIT_URL = 'init_url';
 export const FORGOT_PASSWORD = 'forgot_password';
+export const VERIFY_EMAIL = 'verify_email';
+export const EMAIL_VERIFICATION_SENT = 'email_verification_sent';
+export const EMAIL_VERIFICATION_NOT_SENT = 'email_verification_not_sent';
 
 // Chat Module const
 
@@ -79,7 +82,6 @@ export const UPDATE_MESSAGE_VALUE = 'update_message_value';
 export const UPDATE_SEARCH_CHAT_USER = 'update_search_chat_user';
 
 //// Mail Module const
-
 
 export const ADD_LABEL = 'ADD_LABEL';
 export const GET_ALL_MAIL = 'get_all_mail';
@@ -119,7 +121,8 @@ export const ON_SORTEND = 'on_sortend';
 export const FETCH_ALL_TODO = 'fetch_all_todo';
 export const FETCH_ALL_TODO_SUCCESS = 'fetch_all_todo-success';
 export const FETCH_ALL_TODO_CONVERSATION = 'fetch_all_todo_conversation';
-export const FETCH_ALL_TODO_CONVERSATION_SUCCESS = 'fetch_all_todo_conversation_success';
+export const FETCH_ALL_TODO_CONVERSATION_SUCCESS =
+  'fetch_all_todo_conversation_success';
 export const SELECT_ALL_TODO = 'select_all_todo';
 export const GET_ALL_TODO = 'get_all_todo';
 export const GET_UNSELECTED_ALL_TODO = 'get_unselected_all_todo';
@@ -139,4 +142,3 @@ export const ON_TODO_SELECT = 'on_todo_select';
 export const SET_CURRENT_TODO_NULL = 'set_current_todo_null';
 export const REMOVE_LABEL = 'remove_label';
 export const UPDATE_SEARCH = 'update_search';
-

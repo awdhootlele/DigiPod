@@ -4,10 +4,7 @@ import { connect } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import {
-  NotificationContainer,
-  NotificationManager
-} from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import IntlMessages from 'util/IntlMessages';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
@@ -52,6 +49,15 @@ class SignIn extends React.Component {
     this.toggleForgotPasswordModal(false);
     this.props.showAuthLoader();
     this.props.forgotPassword({ email });
+  }
+
+  showNotification(showMessage, successMessage, alertMessage) {
+    if (showMessage && alertMessage) {
+      return NotificationManager.error(alertMessage);
+    }
+    if (showMessage && successMessage) {
+      return NotificationManager.success(successMessage);
+    }
   }
 
   render() {
@@ -122,9 +128,6 @@ class SignIn extends React.Component {
                     >
                       <IntlMessages id="appModule.signIn" />
                     </Button>
-                    <Link to="/signup">
-                      <IntlMessages id="signIn.signUp" />
-                    </Link>
                   </div>
                   <div className="my-1 my-sm-3">
                     <a
@@ -146,10 +149,7 @@ class SignIn extends React.Component {
             <CircularProgress />
           </div>
         )}
-        {showMessage && alertMessage && NotificationManager.error(alertMessage)}
-        {showMessage &&
-          successMessage &&
-          NotificationManager.success(successMessage)}
+        {this.showNotification(showMessage, successMessage, alertMessage)}
         {forgotPassword && (
           <ForgotPassword
             open={forgotPassword}
@@ -157,7 +157,6 @@ class SignIn extends React.Component {
             handleRequestSubmit={this.handleRequestSubmit.bind(this)}
           />
         )}
-        <NotificationContainer />
       </div>
     );
   }

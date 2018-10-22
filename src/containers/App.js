@@ -5,6 +5,9 @@ import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsPr
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {IntlProvider} from 'react-intl'
+import {
+    NotificationContainer
+  } from 'react-notifications';
 import 'react-big-calendar/lib/less/styles.less';
 import 'styles/bootstrap.scss'
 import 'styles/app.scss';
@@ -15,18 +18,21 @@ import AppLocale from '../lngProvider';
 import MainApp from 'app/index';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import VerifyEmail from './VerifyEmail'
 import {setInitUrl} from '../actions/Auth';
 import RTL from 'util/RTL';
 import asyncComponent from 'util/asyncComponent';
 
-const RestrictedRoute = ({component: Component, ...rest, authUser}) =>
+const RestrictedRoute = ({component: Component, ...rest, authUser, emailVerified}) =>
     <Route
         {...rest}
         render={props =>
-            authUser
+            authUser && emailVerified
                 ? <Component {...props} />
                 : <Redirect
-                    to={{
+                    to={authUser && !emailVerified ? {
+                        pathname: '/verifyemail'
+                    } : {
                         pathname: '/signin',
                         state: {from: props.location}
                     }}
@@ -36,8 +42,9 @@ const RestrictedRoute = ({component: Component, ...rest, authUser}) =>
 class App extends Component {
 
     render() {
-        const {match, location, locale, authUser, initURL, isDirectionRTL} = this.props;
-        if (location.pathname === '/') {
+        const {match, location, locale, authUser, emailVerified, initURL, isDirectionRTL} = this.props;
+        const protectedRoutes = ['/'];
+        if (protectedRoutes.indexOf(location.pathname) > -1) {
             if (authUser === null) {
                 return ( <Redirect to={'/signin'}/> );
             } else if (initURL === '' || initURL === '/' || initURL === '/signin') {
@@ -66,13 +73,17 @@ class App extends Component {
                         <RTL>
                             <div className="app-main">
                                 <Switch>
-                                    <RestrictedRoute path={`${match.url}app`} authUser={authUser}
+                                    <RestrictedRoute path={`${match.url}app`} 
+                                    authUser={authUser} 
+                                    emailVerified={emailVerified}
                                                      component={MainApp}/>
                                     <Route path='/signin' component={SignIn}/>
                                     <Route path='/signup' component={SignUp}/>
+                                    <Route path='/verifyemail' component={VerifyEmail} />
                                     <Route
                                         component={asyncComponent(() => import('components/Error404'))}/>
                                 </Switch>
+                                <NotificationContainer />
                             </div>
                         </RTL>
                     </IntlProvider>
@@ -84,8 +95,8 @@ class App extends Component {
 
 const mapStateToProps = ({settings, auth}) => {
     const {sideNavColor, locale, isDirectionRTL} = settings;
-    const {authUser, initURL} = auth;
-    return {sideNavColor, locale, isDirectionRTL, authUser, initURL}
+    const {authUser, emailVerified,  initURL} = auth;
+    return {sideNavColor, locale, isDirectionRTL, authUser, emailVerified, initURL}
 };
 
 export default connect(mapStateToProps, {setInitUrl})(App);

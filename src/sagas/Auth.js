@@ -14,7 +14,8 @@ import {
   SIGNIN_USER,
   SIGNOUT_USER,
   SIGNUP_USER,
-  FORGOT_PASSWORD
+  FORGOT_PASSWORD,
+  VERIFY_EMAIL
 } from 'constants/ActionTypes';
 import {
   showAuthMessage,
@@ -22,7 +23,9 @@ import {
   userSignOutSuccess,
   userSignUpSuccess,
   forgotPasswordSuccess,
-  forgotPasswordError
+  verifyEmailAddressSuccess,
+  emailVerificationNotSent,
+  emailVerificationSent
 } from 'actions/Auth';
 import {
   userFacebookSignInSuccess,
@@ -84,6 +87,18 @@ const forgotPasswordRequest = async email => {
     });
 };
 
+const verifyEmailRequest = async currentUser => {
+  return await currentUser
+    .sendEmailVerification()
+    .then(res => {
+      return res;
+    })
+    .catch(err => {
+      return err;
+    });
+};
+
+// Not In use - start
 function* createUserWithEmailPassword({ payload }) {
   const { email, password } = payload;
   try {
@@ -162,6 +177,7 @@ function* signInUserWithTwitter() {
     yield put(showAuthMessage(error));
   }
 }
+// Not in use - End
 
 function* signInUserWithEmailPassword({ payload }) {
   const { email, password } = payload;
@@ -175,7 +191,10 @@ function* signInUserWithEmailPassword({ payload }) {
       yield put(showAuthMessage(signInUser.message));
     } else {
       localStorage.setItem('user_id', signInUser.user.uid);
-      yield put(userSignInSuccess(signInUser.user.uid));
+      localStorage.setItem('email_verified', signInUser.user.emailVerified);
+      yield put(
+        userSignInSuccess(signInUser.user.uid, signInUser.user.emailVerified)
+      );
     }
   } catch (error) {
     yield put(showAuthMessage(error));
@@ -187,6 +206,7 @@ function* signOut() {
     const signOutUser = yield call(signOutRequest);
     if (signOutUser === undefined) {
       localStorage.removeItem('user_id');
+      localStorage.removeItem('email_verified');
       yield put(userSignOutSuccess(signOutUser));
     } else {
       yield put(showAuthMessage(signOutUser.message));
@@ -207,6 +227,25 @@ function* forgotPasswordHandler({ payload }) {
         )
       );
     } else {
+      yield put(showAuthMessage(forgotPasswordRes.message));
+    }
+  } catch (error) {
+    yield put(showAuthMessage(error));
+  }
+}
+
+function* verifyEmailHandler() {
+  try {
+    const forgotPasswordRes = yield call(verifyEmailRequest, auth.currentUser);
+    if (forgotPasswordRes === undefined) {
+      yield put(emailVerificationSent());
+      yield put(
+        verifyEmailAddressSuccess(
+          'Verification link has been sent to your registered email. Please check your email and verify your account.'
+        )
+      );
+    } else {
+      yield put(emailVerificationNotSent());
       yield put(showAuthMessage(forgotPasswordRes.message));
     }
   } catch (error) {
@@ -246,6 +285,10 @@ export function* forgotPassword() {
   yield takeEvery(FORGOT_PASSWORD, forgotPasswordHandler);
 }
 
+export function* emailVerify() {
+  yield takeEvery(VERIFY_EMAIL, verifyEmailHandler);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(signInUser),
@@ -255,6 +298,7 @@ export default function* rootSaga() {
     fork(signInWithTwitter),
     fork(signInWithGithub),
     fork(signOutUser),
-    fork(forgotPassword)
+    fork(forgotPassword),
+    fork(emailVerify)
   ]);
 }

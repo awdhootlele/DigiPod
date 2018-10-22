@@ -18,7 +18,10 @@ import {
   SIGNOUT_USER_SUCCESS,
   SIGNUP_USER,
   SIGNUP_USER_SUCCESS,
-  FORGOT_PASSWORD
+  FORGOT_PASSWORD,
+  VERIFY_EMAIL,
+  EMAIL_VERIFICATION_SENT,
+  EMAIL_VERIFICATION_NOT_SENT
 } from 'constants/ActionTypes';
 
 export const forgotPassword = email => {
@@ -34,6 +37,36 @@ export const forgotPasswordSuccess = message => {
     payload: {
       success: message
     }
+  };
+};
+
+export const verifyEmailAddress = () => {
+  return {
+    type: VERIFY_EMAIL,
+    payload: {}
+  };
+};
+
+export const verifyEmailAddressSuccess = message => {
+  return {
+    type: SHOW_MESSAGE,
+    payload: {
+      success: message
+    }
+  };
+};
+
+export const emailVerificationNotSent = () => {
+  return {
+    type: EMAIL_VERIFICATION_NOT_SENT,
+    payload: {}
+  };
+};
+
+export const emailVerificationSent = () => {
+  return {
+    type: EMAIL_VERIFICATION_SENT,
+    payload: {}
   };
 };
 
@@ -61,10 +94,10 @@ export const userSignUpSuccess = authUser => {
   };
 };
 
-export const userSignInSuccess = authUser => {
+export const userSignInSuccess = (authUser, emailVerified) => {
   return {
     type: SIGNIN_USER_SUCCESS,
-    payload: authUser
+    payload: { userId: authUser, emailVerified }
   };
 };
 export const userSignOutSuccess = () => {

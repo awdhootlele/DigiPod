@@ -11,8 +11,8 @@ import {
   SIGNIN_USER_SUCCESS,
   SIGNOUT_USER_SUCCESS,
   SIGNUP_USER_SUCCESS,
-  FORGOT_PASSWORD_SUCCESS,
-  FORGOT_PASSWORD_ERROR
+  EMAIL_VERIFICATION_SENT,
+  EMAIL_VERIFICATION_NOT_SENT
 } from 'constants/ActionTypes';
 
 const INIT_STATE = {
@@ -22,22 +22,20 @@ const INIT_STATE = {
   showMessage: false,
   initURL: '',
   authUser: localStorage.getItem('user_id'),
-  forgotPasswordResponse: null
+  emailVerified: localStorage.getItem('email_verified') === 'true',
+  emailVerificationSent: false
 };
 
 export default (state = INIT_STATE, action) => {
   switch (action.type) {
-    case FORGOT_PASSWORD_ERROR: {
+    case EMAIL_VERIFICATION_SENT: {
       return {
         ...state,
-        forgotPassword: action.payload
+        emailVerificationSent: true
       };
     }
-    case FORGOT_PASSWORD_SUCCESS: {
-      return {
-        ...state,
-        forgotPassword: action.payload
-      };
+    case EMAIL_VERIFICATION_NOT_SENT: {
+      return { ...state, emailVerificationSent: false };
     }
     case SIGNUP_USER_SUCCESS: {
       return {
@@ -50,7 +48,9 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         loader: false,
-        authUser: action.payload
+        authUser: action.payload.userId,
+        emailVerified: action.payload.emailVerified,
+        initURL: ''
       };
     }
     case INIT_URL: {
@@ -71,8 +71,8 @@ export default (state = INIT_STATE, action) => {
     case SHOW_MESSAGE: {
       return {
         ...state,
-        alertMessage: action.payload.error,
-        successMessage: action.payload.success,
+        alertMessage: action.payload.error || '',
+        successMessage: action.payload.success || '',
         showMessage: true,
         loader: false
       };
